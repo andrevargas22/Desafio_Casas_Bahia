@@ -55,6 +55,7 @@ import mlflow.pyfunc
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
+import os
 
 ##################### 2. CONFIGURAÇÕES
 # Iniciar a aplicação FastAPI
@@ -64,7 +65,7 @@ app = FastAPI()
 # - Definir URI de rastreamento do server MLFlow
 # - Carregar o modelo treinado do MLFlow
 
-TRACKING_URI = "https://mlflow-server-wno7iop4fa-uc.a.run.app/"
+TRACKING_URI = os.getenv('MLFLOW_TRACKING_URI')
 mlflow.set_tracking_uri(TRACKING_URI)
 
 model_name = "titanic"
