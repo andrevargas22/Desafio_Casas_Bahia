@@ -40,7 +40,7 @@ jobs:
     
     - name: Deploy FastAPI Server
       run: |
-        gcloud run deploy "fastapi-server" \
+        gcloud run deploy "titanic-api" \
           --image "${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/fastapi:${{ github.sha }}" \
           --region "${{ env.REGION }}" \
           --service-account "${{ env.SERVICE_ACCOUNT }}" \
