@@ -1,0 +1,49 @@
+name: Deploy Containers
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  login-build-push:
+    name: Build, Push and Run
+    runs-on: ubuntu-latest
+
+    env:
+      REGION: us-central1                    # edit here
+      PROJECT_ID: my-mlflow-server           # edit here
+      REPOSITORY: mlflow-containers          # edit here
+      SERVICE_ACCOUNT: mlflow-sa             # edit here
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - id: 'auth'
+      name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v1
+      with: 
+        project_id: '${{ env.PROJECT_ID }}'
+        credentials_json: '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}'
+    
+    - name: 'Docker config'
+      run: |-
+        gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev 
+
+    - name: 'Build FastAPI container'
+      run: |-
+        docker build -t "${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/fastapi:${{ github.sha }}" -f Dockerfile .
+      
+    - name: 'Push FastAPI container'
+      run: |-
+        docker push "${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/fastapi:${{ github.sha }}"
+    
+    - name: Deploy FastAPI Server
+      run: |
+        gcloud run deploy "fastapi-server" \
+          --image "${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/fastapi:${{ github.sha }}" \
+          --region "${{ env.REGION }}" \
+          --service-account "${{ env.SERVICE_ACCOUNT }}" \
+          --memory 1Gi \
+          --allow-unauthenticated \
+          --port 8000

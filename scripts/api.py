@@ -136,6 +136,7 @@ def process_data(df: pd.DataFrame) -> pd.DataFrame:
     
     return df
 
+##################### 4. ENDPOINTS
 @app.post("/predict")
 async def predict(request: Request):
     """
@@ -170,6 +171,6 @@ async def predict(request: Request):
         
     return {"predictions": predictions_list}
 
+##################### 5. INICIAR A APLICAÇÃO
 if __name__ == "__main__":
-    # Iniciar a aplicação FastAPI
     uvicorn.run(app, host="127.0.0.1", port=8000)
