@@ -107,3 +107,20 @@ Após iniciar a API, você pode usar curl ou Postman para enviar uma solicitaç�
 ![local](imagens/local.png)
 
 - Aplicação dedicada: Você pode acessar a aplicação dedicada que está hospedada [https://andrevargas.com.br/titanic_api](https://andrevargas.com.br/titanic_api). Essa aplicação fornece uma interface gráfica para carregar um arquivo CSV, visualizar os dados e obter previsões diretamente da API. Uma sugestão é subir o csv "test.csv", que está dentro da pasta "data/1. raw", para ver os resultados no dataset de teste do Titanic.
+
+Clique para selecionar um arquivo localmente, em seguida em "Carregar CSV".
+
+![app1](imagens/app1.png)
+
+Em seguida, as primeiras 5 linhas do CSV serão mostradas, juntamente com um botão "Predict". Clique em "Predict" para enviar os dados ao endpoint /predict.
+
+![app2](imagens/app2.png)
+
+Se os dados possuírem as colunas necessárias com as especificações corretas, a predição será feita e uma mensagem de confirmação indicará que a operação foi bem sucedida.
+
+![app3](imagens/app3.png)
+
+Os resultados das primeiras linhas irão aparecer na tela, e um botão para baixar toda a base com os resultados estará disponível.
+
+![app1](imagens/app4.png)
+
