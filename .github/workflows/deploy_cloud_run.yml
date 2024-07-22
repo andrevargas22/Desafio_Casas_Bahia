@@ -44,7 +44,7 @@ jobs:
           --image "${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/fastapi:${{ github.sha }}" \
           --region "${{ env.REGION }}" \
           --service-account "${{ env.SERVICE_ACCOUNT }}" \
-          --update-secrets "${{ secrets.MLFLOW_TRACKING_URI }}" \
+          --set-env-vars MLFLOW_TRACKING_URI=${{ secrets.MLFLOW_TRACKING_URI }} \
           --memory 1Gi \
           --allow-unauthenticated \
           --port 8000
