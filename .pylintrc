@@ -1,0 +1,73 @@
+[FORMAT]
+# Número máximo de caracteres em uma única linha.
+max-line-length = 120
+
+# Número de espaços de recuo requeridos dentro de uma linha pendente ou continuada.
+indent-after-paren = 4
+
+[MESSAGES CONTROL]
+# useless-object-inheritance (R0205): Usado quando uma classe herda de object, o que é implícito no Python 3 e pode ser removido com segurança das bases.
+# too-few-public-methods (R0903): Usado quando uma classe possui poucos métodos públicos, então verifique se realmente vale a pena.
+disable = R0205, R0903, E0401
+
+[REPORTS]
+# Especifica um limite de pontuação a ser ultrapassado antes do programa sair com erro.
+fail-under = 9.0
+
+[BASIC]
+
+# Estilo de nomenclatura correspondente aos nomes corretos de argumentos.
+argument-naming-style = snake_case
+
+# Estilo de nomenclatura correspondente aos nomes corretos de atributos.
+attr-naming-style = snake_case
+
+# Estilo de nomenclatura correspondente aos nomes corretos de constantes de classe.
+class-const-naming-style = UPPER_CASE
+
+# Estilo de nomenclatura correspondente aos nomes corretos de classes.
+class-naming-style = PascalCase
+
+# Estilo de nomenclatura correspondente aos nomes corretos de funções.
+function-naming-style = snake_case
+
+# Estilo de nomenclatura correspondente aos nomes corretos de constantes.
+const-naming-style = UPPER_CASE
+
+# Estilo de nomenclatura correspondente aos nomes corretos de métodos.
+method-naming-style = snake_case
+
+# Estilo de nomenclatura correspondente aos nomes corretos de módulos.
+module-naming-style = snake_case
+
+# Estilo de nomenclatura correspondente aos nomes corretos de variáveis.
+variable-naming-style = snake_case
+
+# Nomes de variáveis inadequados que devem ser sempre recusados, separados por vírgula.
+bad-names = foo,
+            bar,
+            baz,
+            toto,
+            tutu,
+            tata,
+            i,
+            m,
+            n,
+            c,
+            j,
+            k,
+            ex,
+            Run,
+            df,
+            x,
+            X,
+            y,
+            Y
+
+# Nomes de variáveis adequados que devem ser sempre aceitos, separados por vírgula.
+good-names = X_train,
+             X_test,
+             y_train,
+             y_test,
+             df,
+             
