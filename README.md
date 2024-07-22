@@ -72,7 +72,7 @@ Essa API está em produção com CI/CD realizando um deploy automático após te
 
 A API pode ser testada da seguinte maneira:
 
-- 1) Usar ferramentas como curl ou Postman para enviar uma solicitação POST ao endpoint /predict da API. Exemplo:
+- Usar ferramentas como curl ou Postman para enviar uma solicitação POST ao endpoint /predict da API. Exemplo:
 
 ```
 curl -X POST "https://titanic-api-wno7iop4fa-uc.a.run.app/predict" -H "Content-Type: application/json" -d '[
@@ -95,7 +95,7 @@ curl -X POST "https://titanic-api-wno7iop4fa-uc.a.run.app/predict" -H "Content-T
 
 ![curl](imagens/prediction.png)
 
-- 2) É possível rodar a API localmente utilizando o Makefile e, em seguida, enviar uma solicitação para o localhost. Baixe o repositório e execute os seguintes comandos:
+- É possível rodar a API localmente utilizando o Makefile e, em seguida, enviar uma solicitação para o localhost. Baixe o repositório e execute os seguintes comandos:
 
 ```
 make install
@@ -106,4 +106,4 @@ Após iniciar a API, você pode usar curl ou Postman para enviar uma solicitaç�
 
 ![local](imagens/local.png)
 
-- 3) Aplicação dedicada: Você pode acessar a aplicação dedicada que está hospedada [https://andrevargas.com.br/titanic_api](https://andrevargas.com.br/titanic_api). Essa aplicação fornece uma interface gráfica para carregar um arquivo CSV, visualizar os dados e obter previsões diretamente da API. Uma sugestão é subir o csv "test.csv", que está dentro da pasta "data/1. raw", para ver os resultados no dataset de teste do Titanic.
+- Aplicação dedicada: Você pode acessar a aplicação dedicada que está hospedada [https://andrevargas.com.br/titanic_api](https://andrevargas.com.br/titanic_api). Essa aplicação fornece uma interface gráfica para carregar um arquivo CSV, visualizar os dados e obter previsões diretamente da API. Uma sugestão é subir o csv "test.csv", que está dentro da pasta "data/1. raw", para ver os resultados no dataset de teste do Titanic.
