@@ -56,6 +56,7 @@ import yaml
 import pandas as pd
 import mlflow.pyfunc
 from fastapi import FastAPI, Request, Depends
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
@@ -216,7 +217,30 @@ def process_data(df: pd.DataFrame) -> pd.DataFrame:
 
     return df
 
+def get_model_metadata(model) -> dict:
+    """
+    Obtém os metadados do modelo, incluindo nome, estágio, tags, parâmetros e métricas.
 
+    Parâmetros:
+        model (mlflow.pyfunc.PyFunc): O modelo carregado.
+
+    Retorna:
+        dict: Um dicionário contendo os metadados do modelo.
+    """
+    client = mlflow.tracking.MlflowClient()
+    run_id = model.metadata.run_id
+
+    # Obter tags, parâmetros e métricas
+    tags = client.get_run(run_id).data.tags
+    params = client.get_run(run_id).data.params
+    metrics = client.get_run(run_id).data.metrics
+
+    return {
+        "tags": tags,
+        "params": params,
+        "metrics": metrics,
+    }
+    
 ##################### 4. ENDPOINTS
 @app.post("/predict")
 async def predict(request: Request, model=Depends(get_model)):
@@ -252,6 +276,21 @@ async def predict(request: Request, model=Depends(get_model)):
     predictions_list = predictions.tolist()
 
     return {"predictions": predictions_list}
+
+@app.get("/metadata")
+async def model_metadata(model=Depends(get_model)):
+    """
+    Endpoint para obter os metadados do modelo, incluindo nome, estágio, tags, parâmetros e métricas.
+
+    Parâmetros:
+        model (mlflow.pyfunc.PyFunc): O modelo carregado injetado pela dependência.
+
+    Retorna:
+        dict: Um dicionário contendo os metadados do modelo.
+    """
+    
+    metadata = get_model_metadata(model)
+    return JSONResponse(content=metadata, media_type="application/json")
 
 
 ##################### 5. INICIAR A APLICAÇÃO
