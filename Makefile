@@ -6,8 +6,8 @@ install:
 code-review:
 	black scripts/
 	pylint scripts/*.py
+	pytest --cov=scripts tests/
 
 # Rodar a API localmente
-api-local:
-	export MLFLOW_TRACKING_URI="https://mlflow-server-wno7iop4fa-uc.a.run.app/" && \
+local:
 	uvicorn scripts.api:app --reload --host 127.0.0.1 --port 8000

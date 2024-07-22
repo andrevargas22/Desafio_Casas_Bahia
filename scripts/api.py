@@ -7,8 +7,8 @@ no formato JSON, valida os dados, processa-os e retorna as previsões de sobrevi
 
 Funcionalidades:
 - Carregar um modelo treinado do MLFlow.
-- Configurar middleware CORS para permitir solicitações de diferentes origens.
-- Validar os dados de entrada para garantir que as colunas esperadas e seus tipos estejam presentes.
+- Ao receber uma request, validar os dados de entrada para garantir que as colunas esperadas e seus tipos
+estejam presentes.
 - Processar os dados de entrada para transformá-los em um formato adequado para predição.
 - Retornar previsões baseadas nos dados de entrada.
 
@@ -52,27 +52,16 @@ André Vargas (andrevargas22@gmail.com)
 """
 
 ##################### 1. BIBLIOTECAS
-import os
+import yaml
 import pandas as pd
 import mlflow.pyfunc
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
 ##################### 2. CONFIGURAÇÕES
 # Iniciar a aplicação FastAPI
 app = FastAPI()
-
-# Configurações MLFlow:
-# - Definir URI de rastreamento do server MLFlow
-# - Carregar o modelo treinado do MLFlow
-
-TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI")
-mlflow.set_tracking_uri(TRACKING_URI)
-
-MODEL_NAME = "titanic"
-STAGE = "staging"
-model = mlflow.pyfunc.load_model(model_uri=f"models:/{MODEL_NAME}/{STAGE}")
 
 # Configurar CORS
 origins = ["*"]
@@ -86,6 +75,79 @@ app.add_middleware(
 )
 
 ##################### 3. FUNÇÕES
+def read_params(path):
+    """
+    Função para ler parâmentors de configuração de página
+    de um arquivo yaml.
+
+    Parâmetros:
+        path (str): caminho do arquivo
+
+    Retorna:
+        dict: dicionário com os parâmetros lidos do arquivo
+    """
+
+    with open(path, encoding="utf-8") as yaml_file:
+        config = yaml.safe_load(yaml_file)
+    return config
+
+
+def connect_mlflow():
+    """
+    Configura a URI de rastreamento do servidor MLFlow para carregar modelos.
+
+    Parâmetros:
+        None
+
+    Retorna:
+        None
+    """
+
+    tracking_uri = "https://mlflow-server-wno7iop4fa-uc.a.run.app/"
+    mlflow.set_tracking_uri(tracking_uri)
+
+
+def fetch_model():
+    """
+    Carrega o modelo treinado do MLFlow Model Registry.
+
+    Parâmetros:
+        None
+
+    Retorna:
+        mlflow.pyfunc.PyFunc: O modelo carregado do MLFlow.
+    """
+
+    config_params = read_params("config_mlflow/params.yml")
+
+    model_name = config_params["model_name"]
+    model_stage = config_params["model_stage"]
+
+    return mlflow.pyfunc.load_model(model_uri=f"models:/{model_name}/{model_stage}")
+
+
+def get_model():
+    """
+    Função de dependência para obter o modelo treinado do MLFlow. Esta função
+    utiliza um atributo interno para armazenar o modelo carregado na primeira vez que é chamado.
+    Em chamadas subsequentes, retorna o modelo já carregado, evitando recarregamentos desnecessários.
+
+    Parâmetros:
+        None
+
+    Retorna:
+        mlflow.pyfunc.PyFunc: O modelo treinado do MLFlow.
+    """
+
+    # Verificar se o modelo já foi carregado
+    if not hasattr(get_model, "model"):
+
+        connect_mlflow()
+        get_model.model = fetch_model()
+
+    return get_model.model
+
+
 def validate_data(df: pd.DataFrame) -> (bool, str):
     """
     Valida o DataFrame de entrada para garantir que possui as colunas e tipos esperados.
@@ -157,7 +219,7 @@ def process_data(df: pd.DataFrame) -> pd.DataFrame:
 
 ##################### 4. ENDPOINTS
 @app.post("/predict")
-async def predict(request: Request):
+async def predict(request: Request, model=Depends(get_model)):
     """
     Endpoint da API que lida com solicitações de predict, valida os dados,
     processa e retorna as previsões.

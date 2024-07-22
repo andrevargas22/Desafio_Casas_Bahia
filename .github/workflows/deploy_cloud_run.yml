@@ -10,10 +10,10 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      REGION: us-central1                    # edit here
-      PROJECT_ID: my-mlflow-server           # edit here
-      REPOSITORY: mlflow-containers          # edit here
-      SERVICE_ACCOUNT: mlflow-sa             # edit here
+      REGION: us-central1                   
+      PROJECT_ID: my-mlflow-server           
+      REPOSITORY: mlflow-containers          
+      SERVICE_ACCOUNT: mlflow-sa             
 
     steps:
     - name: Checkout
@@ -28,7 +28,18 @@ jobs:
     
     - name: 'Docker config'
       run: |-
-        gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev 
+        gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.10'  # or the version you are using
+
+    - name: Install dependencies
+      run: make install
+
+    - name: Run code review (black, pylint, pytest)
+      run: make code-review
 
     - name: 'Build FastAPI container'
       run: |-
@@ -44,7 +55,6 @@ jobs:
           --image "${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/fastapi:${{ github.sha }}" \
           --region "${{ env.REGION }}" \
           --service-account "${{ env.SERVICE_ACCOUNT }}" \
-          --set-env-vars MLFLOW_TRACKING_URI=${{ secrets.MLFLOW_TRACKING_URI }} \
           --memory 1Gi \
           --allow-unauthenticated \
           --port 8000
