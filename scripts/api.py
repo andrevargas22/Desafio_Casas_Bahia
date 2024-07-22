@@ -11,17 +11,21 @@ Funcionalidades:
 estejam presentes.
 - Processar os dados de entrada para transformá-los em um formato adequado para predição.
 - Retornar previsões baseadas nos dados de entrada.
+- Obter metadados do modelo carregado, incluindo nome, estágio, tags, parâmetros e métricas.
 
 Endpoints:
 - /predict (POST): Aceita dados JSON, valida, processa e retorna as previsões.
+- /metadata (GET): Retorna os metadados do modelo carregado, incluindo nome, estágio, tags, parâmetros e métricas.
 
 Funções:
-- validate_data(df: pd.DataFrame) -> (bool, str): Valida o DataFrame de entrada
-para garantir que possui as colunas e tipos esperados.
-- process_data(df: pd.DataFrame) -> pd.DataFrame: Processa o DataFrame de entrada
-selecionando colunas relevantes, codificando a coluna 'Sex' e removendo valores ausentes.
-- predict(request: Request): Endpoint da API que lida com solicitações de predição,
-valida os dados, processa-os e retorna as previsões.
+- read_params(path: str) -> dict: Lê parâmetros de configuração de um arquivo YAML.
+- connect_mlflow() -> None: Configura a URI de rastreamento do servidor MLFlow para carregar modelos.
+- fetch_model() -> mlflow.pyfunc.PyFunc: Carrega o modelo treinado do MLFlow Model Registry.
+- get_model() -> mlflow.pyfunc.PyFunc: Função de dependência para obter o modelo treinado do MLFlow.
+- validate_data(df: pd.DataFrame) -> (bool, str): Valida o DataFrame de entrada para garantir que possui as colunas 
+e tipos esperados.
+- process_data(df: pd.DataFrame) -> pd.DataFrame: Processa o DataFrame de entrada.
+- get_model_metadata(model: mlflow.pyfunc.PyFunc) -> dict: Obtém os metadados do modelo.
 
 Como usar:
 1. Configure o servidor MLFlow e ajuste o URI de rastreamento conforme necessário.
@@ -217,6 +221,7 @@ def process_data(df: pd.DataFrame) -> pd.DataFrame:
 
     return df
 
+
 def get_model_metadata(model) -> dict:
     """
     Obtém os metadados do modelo, incluindo nome, estágio, tags, parâmetros e métricas.
@@ -240,7 +245,8 @@ def get_model_metadata(model) -> dict:
         "params": params,
         "metrics": metrics,
     }
-    
+
+
 ##################### 4. ENDPOINTS
 @app.post("/predict")
 async def predict(request: Request, model=Depends(get_model)):
@@ -277,6 +283,7 @@ async def predict(request: Request, model=Depends(get_model)):
 
     return {"predictions": predictions_list}
 
+
 @app.get("/metadata")
 async def model_metadata(model=Depends(get_model)):
     """
@@ -288,7 +295,7 @@ async def model_metadata(model=Depends(get_model)):
     Retorna:
         dict: Um dicionário contendo os metadados do modelo.
     """
-    
+
     metadata = get_model_metadata(model)
     return JSONResponse(content=metadata, media_type="application/json")
 
